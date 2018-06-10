@@ -1,0 +1,6 @@
+{
+    "name": "halcyondigital/malt",
+    "description": "Various custom form alters and hooks for website tweaking",
+    "type": "drupal-module",
+    "minimum-stability": "dev"
+}
