@@ -1,0 +1,130 @@
+<?php
+use Drupal\node\Entity\Node;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\ViewExecutable;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+function malt_slick_skins_info() {
+  return '\Drupal\malt\SlickMaltSkin';
+}
+
+function malt_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+    $items = $context['items'];
+    $element_name = $items->getName();
+    switch($element_name) {
+        case 'field_stat_value':
+            $element['#title'] = '';
+        case 'field_stat_subtitle':
+            $element['#title'] = '';
+            $element['value']['#title'] = '';
+    } 
+}
+
+/*  only use deepest terms and hide terms without parent argument */
+function malt_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $view = $form_state->get('view');
+  $display = $form_state->get('display');
+  if ($view->id() == 'rental_items') {
+    $arg = $view->args[0] ?? NULL;
+    $vid = 'categories';
+    $terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid);
+    $options['All'] = 'All';
+    foreach ($terms as $term) {
+      if(in_array($arg, $term->parents)){
+       $options[$term->tid] = $term->name;
+      }
+    }
+    $form['category']['#options'] = $options;
+  }
+}
+
+function malt_form_taxonomy_term_categories_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Create a fullpage group in the right-hand column
+  $form['fullpage'] = [
+    '#type' => 'details',
+    '#title' => t('Fullpage settings'),
+    '#group' => 'advanced',
+    '#weight' => 10,
+    '#optional' => TRUE,
+    '#open' => TRUE,
+  ];
+
+  // Move the fullpage settings to the right-hand column
+  $form['field_fp_classes']['#group'] = 'fullpage';
+  $form['field_fp_offset']['#group'] = 'fullpage';
+  $form['field_fp_offset_centered']['#group'] = 'fullpage';
+
+  return $form;
+}
+
+function malt_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Create a fullpage group in the right-hand column
+  $form['fullpage'] = [
+    '#type' => 'details',
+    '#title' => t('Fullpage settings'),
+    '#group' => 'advanced',
+    '#attributes' => [
+      'class' => ['node-form-options']
+    ],
+    '#attached' => [
+      'library' => ['node/drupal.node'],
+    ],
+    '#weight' => 100,
+    '#optional' => TRUE,
+    '#open' => TRUE,
+  ];
+
+  // Move the fullpage settings to the right-hand column
+  $form['field_fp_classes']['#group'] = 'fullpage';
+  $form['field_fp_offset']['#group'] = 'fullpage';
+  $form['field_fp_offset_centered']['#group'] = 'fullpage';
+
+  return $form;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function malt_form_views_ui_edit_display_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (!empty($form['options']['css_class'])) {
+    /** @var \Drupal\views\Entity\View $view */
+    $view = $form_state->getStorage()['view'];
+    $display = $view->getExecutable()->getDisplay();
+    $form['options']['fullpage_class'] = [
+      '#type' => 'select',
+      '#title' => t('Class for fullpage section'),
+      '#options' => [
+        'fp-auto-height' => t('Auto height'),
+        'fp-auto-height-responsive' => t('Auto height (responsive)'),
+      ],
+      '#empty_value' => '',
+      '#default_value' => $display->display['display_options']['fullpage_class'],
+    ];
+    $form['options']['fullpage_offset'] = [
+      '#type' => 'number',
+      '#title' => t('Offset percentage'),
+      '#min' => 0,
+      '#max' => 100,
+      '#step' => 10,
+      '#default_value' => $display->display['display_options']['fullpage_offset'],
+    ];
+    $form['options']['fullpage_offsetcenter'] = [
+      '#type' => 'checkbox',
+      '#title' => t("Don't vertically center offset?"),
+      '#default_value' => !empty($display->display['display_options']['fullpage_offsetcenter']),
+    ];
+    array_unshift($form['actions']['submit']['#submit'], '_malt_form_views_ui_edit_display_submit');
+  }
+}
+
+/**
+ * Form submit callback for views_ui_edit_display.
+ */
+function _malt_form_views_ui_edit_display_submit(&$form, FormStateInterface $form_state) {
+  /** @var \Drupal\views\Entity\View $view */
+  $view = $form_state->getStorage()['view'];
+  $display = $view->getExecutable()->getDisplay();
+  $display->display['display_options']['fullpage_class'] = $form_state->getValue('fullpage_class');
+  $display->display['display_options']['fullpage_offset'] = $form_state->getValue('fullpage_offset');
+  $display->display['display_options']['fullpage_offsetcenter'] = $form_state->getValue('fullpage_offsetcenter');
+}

@@ -1,0 +1,33 @@
+/**
+ * @file
+ * Slick example testimonial with thumbnail and description and slidesToShow 2.
+ */
+ .slick-arrow {
+   transition: opacity 0.3s ease;
+ }
+ .slick-arrow::before {
+	color: #212121;
+	opacity: 1;
+	font-size: 2.5rem;
+}
+.slick-arrow:hover::before {
+  color: #16c1f3;
+}
+.slick-arrow.slick-prev {
+	transform: translate(-110%,-150%);
+}
+.slick-arrow.slick-next {
+	transform: translate(110%,-150%);
+}
+.slick-arrow.slick-disabled {
+  opacity: 0;
+}
+.slick-slide {
+  margin: 0 1.5vw;
+}
+.slick-list {
+  margin: 0 -1.5vw;
+}
+.slick-track {
+	margin-left: 0;
+}
