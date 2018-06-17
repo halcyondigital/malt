@@ -10,8 +10,11 @@
 	opacity: 1;
 	font-size: 2.5rem;
 }
-.slick-arrow:hover::before {
+.slick-arrow:hover::before, .fullpage-section-dark .slick-arrow:hover::before {
   color: #16c1f3;
+}
+.fullpage-section-dark .slick-arrow::before {
+	color: #fdfdfd;
 }
 .slick-arrow.slick-prev {
 	transform: translate(-110%,-150%);
