@@ -34,3 +34,7 @@
 .slick-track {
 	margin-left: 0;
 }
+.slick-disabled {
+	pointer-events: none;
+	cursor: auto;
+}
