@@ -14,12 +14,12 @@ function malt_token_info() {
     'description' => t("The node title converted to lowercase."),
   ];
   $info['tokens']['term']['term_hashpath'] = array(
-    'name' => t('Term hashpath'),
+    'name' => t('Term hash path'),
     'description' => t("Path to the term built for the hash fragment"),
     'type' => 'term',
   );
   $info['tokens']['term']['term_deeppath'] = array(
-    'name' => t('Term deepath'),
+    'name' => t('Term deep path'),
     'description' => t("Path to the term built only to level 2"),
     'type' => 'term',
   );
