@@ -1,5 +1,5 @@
 name: Malt
 description: 'Custom hooks and alters.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 version: 0.1
